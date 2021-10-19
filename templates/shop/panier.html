@@ -1,0 +1,110 @@
+{% extends 'shop/base.html' %}
+{% block content %}
+ <div class="container mb-3">
+     <h1 style="text-align: center;">Votre Panier</h1>
+    <div class="row">
+        <div class="col-md-12">
+           <ul id="item_list" class="list-group list-group-numbered">
+            
+             </ul>
+        </div>
+    </div>
+ </div>
+<div class="container">
+    <div class="row">
+        <div class="col-lg">
+            <form class="row g-3" method="POST" action="">
+                {% csrf_token %}
+                <input type="hidden" name="items" id="items">
+                <div class="col-md-6">
+                    <label for="nom" class="form-label">Nom</label>
+                    <input type="text" placeholder="Prénom et nom" class="form-control" id="nom" name="nom">
+                  </div>
+                  <div class="col-md-6">
+                    <label for="phone" class="form-label">Téléphone</label>
+                    <input type="text" placeholder=" ex: +221776589668" class="form-control" id="phone" name="phone">
+                  </div>
+                <div class="col-md-6">
+                  <label for="email" class="form-label">Email</label>
+                  <input type="email" placeholder="Ex: commande@gmail.com" class="form-control" id="email" name="email">
+                </div>
+                <div class="col-md-6">
+                  <label for="password" class="form-label">Password</label>
+                  <input type="password" class="form-control" id="password" name="password">
+                </div>
+                <div class="col-12">
+                  <label for="adresse"  class="form-label">Adresse</label>
+                  <input type="text" placeholder="ex: Sacré-Coeur 3 villa n°X" class="form-control" id="adresse" name="adresse" placeholder="1234 Main St">
+                </div>
+                <div class="col-md-6">
+                  <label for="ville" class="form-label">Ville</label>
+                  <input type="text" placeholder="votre ville de régidence" class="form-control" id="ville" name="ville">
+                </div>
+                <div class="col-md-4">
+                  <label for="pays" class="form-label">Pays</label>
+                  <select id="pays" name="pays" class="form-select">
+                    <option selected>Sénégal.</option>
+                    <option>Mali</option>
+                    <option>Maroc</option>
+                  </select>
+                </div>
+                <div class="col-md-2">
+                  <label for="zipcode" class="form-label">Zip</label>
+                  <input name="zipcode" id="zipcode" type="text" class="form-control">
+                </div>
+                <div class="col-md-2">
+                    <label for="total" class="form-label">Somme Total</label>
+                    <input name="total" id="total" type="readonly" class="form-control">
+                  </div>
+                <!-- <div class="col-12">
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="gridCheck">
+                    <label class="form-check-label" for="gridCheck">
+                      Check me out
+                    </label>
+                  </div>
+                </div> -->
+                <div class="col-12">
+                  <button type="submit" class="btn btn-primary">Commander</button>
+                </div>
+              </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block JS  %}
+ <script type="text/javascript">
+   if(localStorage.getItem('panier')==null){
+       var panier ={};
+   }else{
+       panier = JSON.parse(localStorage.getItem('panier'));
+   }
+   var total = 0;
+   var nombre = 0;
+   for(item in panier){
+       let nom = panier[item][1];
+       let quantite = panier[item][0];
+       let prix = panier[item][2];
+       nombre += quantite;
+       total +=prix;
+       let itemsString = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <strong style="float: left;"> ${nom}</strong>
+                <span class="badge bg-primary rounded-pill"> Qte: ${quantite}</span>
+                <span class="badge bg-primary rounded-pill"> Prix: ${prix}</span>
+                 
+               </li>` ;
+               $('#item_list').append(itemsString);
+               
+   }
+   let itemsNombre = `<li class="list-group-item d-flex justify-content-between align-items-start">
+                <strong style="float: left;" class="bg-danger"> Prix et Quantité Total :</strong>
+                <span class="badge bg-success rounded-pill"> TQE: ${nombre}</span>
+                 <span class="badge bg-success rounded-pill"> Prix Total: ${total} FCFA</span>
+               </li>` ;
+               $('#item_list').append(itemsNombre);
+                $('#total').val(total);
+   $('#items').val(JSON.stringify(panier));
+
+</script>
+
+{% endblock %}

@@ -1,0 +1,84 @@
+{% extends 'shop/base.html' %}
+{% load static %}
+{% block content %}
+<div class="container">
+	<div class="row mb-2">
+		{% for produit in produits %}
+		<div class="col-lg-3 col-sm-6 col-md-4">
+			<a href="{% url 'show' produit.id %}">
+				<div class="card">
+					<img class="card-img-top" src="{{ produit.image }}" alt="">
+				</div>
+		   </a>
+			<div class="card-body">
+				<div id="aa{{ produit.id }}" class="card-title">{{ produit.titre }}</div>
+				<div id="price{{ produit.id }}" class="card-text" style="color: darkorange;">{{ produit.price }}</div>
+				<!-- <button class="btn btn-primary"><a style="color: white; text-decoration: none;" href="{% url 'show' produit.id %}"> Detail</a></button> -->
+				<div id="{{ produit.id }}" style="float: right;" class="btn samapanier btn-info mb-3">Add To Cart</div>
+			</div>
+		</div>
+		{% endfor %}
+	</div>
+</div>
+{% endblock  %}
+
+{% block JS  %}
+
+<script type="text/javascript">
+   console.log("test");
+   if(localStorage.getItem('panier') == null){
+	   var panier = {};
+   }else{
+	   panier = JSON.parse(localStorage.getItem('panier'));
+
+   }
+   $(document).on('click', '.samapanier',function(){
+	   console.log('ajouter');
+	   var item_id = this.id.toString();
+	   console.log(item_id);
+	   if(panier[item_id] != undefined){
+		   quantite = panier[item_id][0] +1;
+		   panier[item_id][0] = quantite;
+		   panier[item_id][2] += parseFloat(document.getElementById("price"+item_id).innerHTML);
+		//    panier[item_id] = panier[item_id] + 1;
+	   }
+	   else{
+		//    panier[item_id] = 1;
+		quantite = 1;
+		prix = parseFloat(document.getElementById("price"+item_id).innerHTML);
+		nom = document.getElementById("aa"+item_id).innerHTML;
+		panier[item_id] = [quantite,nom, prix];
+
+	   }
+	   console.log(panier);
+	   localStorage.setItem('panier',JSON.stringify(panier));
+	   console.log(Object.keys(panier).length);
+	   document.getElementById("panier").innerHTML ="Panier("+ Object.keys(panier).length +")";   
+	  
+   });
+   var popover = new bootstrap.Popover(document.querySelector('#panier'), {
+  container: 'body'
+});
+//    $(function () {
+//   $('[data-toggle="popover"]').popover()
+// document.getElementById('panier').setAttribute('data-content','<h5>Voici votre liste</h5>');
+//  })
+AfficherList(panier);
+function AfficherList(panier){
+	var panierString = "";
+	panierString += "<h5>Voici votre liste</h5>";
+	var index = 1;
+	for(var x in panier){
+		panierString+=index;
+		panierString += document.getElementById("aa"+x).innerHTML +" Qte "+ panier[x][0] + "<br>";
+		index +=1;
+	}
+	//   $('[data-toggle="popover"]').popover()
+// document.getElementById('panier').setAttribute('data-content',panierString);
+
+
+}
+</script>
+
+
+{% endblock  %}
